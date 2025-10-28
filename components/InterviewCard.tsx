@@ -7,7 +7,7 @@ import { Button } from './ui/button';
 import DisplayTechIcons from './DisplayTechIcons';
 
 
-const InterviewCard = ({interviewId,userId,role,type,techstack,createdAt}:InterviewCradProps) => {
+const InterviewCard = ({interviewId,userId,role,type,techstack,createdAt}:InterviewCardProps) => {
     const feedback=null as Feedback|null;
 
     //technical
