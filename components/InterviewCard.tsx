@@ -5,9 +5,10 @@ import {getRandomInterviewCover} from "@/lib/utils"
 import Link from 'next/link';
 import { Button } from './ui/button';
 import DisplayTechIcons from './DisplayTechIcons';
+import { id } from 'zod/v4/locales';
 
 
-const InterviewCard = ({interviewId,userId,role,type,techstack,createdAt}:InterviewCardProps) => {
+const InterviewCard = ({id,userId,role,type,techstack,createdAt}:InterviewCardProps) => {
     const feedback=null as Feedback|null;
 
     //technical
@@ -62,8 +63,8 @@ const InterviewCard = ({interviewId,userId,role,type,techstack,createdAt}:Interv
             <Link
               href={
                 feedback
-                  ? `/interview/${interviewId}/feedback`
-                  : `/interview/${interviewId}`
+                  ? `/interview/${id}/feedback`
+                  : `/interview/${id}`
               }
             >
               {feedback ? "Check Feedback" : "View Interview"}
