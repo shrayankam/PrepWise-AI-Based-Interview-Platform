@@ -43,4 +43,5 @@ next-env.d.ts
 
 .env.local
 firebase/client.tsx
+firebase/admin.tsx
 
