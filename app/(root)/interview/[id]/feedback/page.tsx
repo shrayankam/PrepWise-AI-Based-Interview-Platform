@@ -177,7 +177,7 @@ const Feedback = async ({ params }: RouteParams) => {
                 .replace(/^./, (str) => str.toUpperCase())}
               : {value.score}/100
             </p>
-            <p className="text-gray-600">{value.comment}</p>
+            <p className="text-white">{value.comment}</p>
           </div>
         )
       )
