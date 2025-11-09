@@ -155,39 +155,72 @@ End the conversation on a polite and positive note.
   },
 };
 
+// export const feedbackSchema = z.object({
+//   totalScore: z.number(),
+//   categoryScores: z.tuple([
+//     z.object({
+//       name: z.literal("Communication Skills"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//     z.object({
+//       name: z.literal("Technical Knowledge"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//     z.object({
+//       name: z.literal("Problem Solving"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//     z.object({
+//       name: z.literal("Cultural Fit"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//     z.object({
+//       name: z.literal("Confidence and Clarity"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//   ]),
+//   strengths: z.array(z.string()),
+//   areasForImprovement: z.array(z.string()),
+//   finalAssessment: z.string(),
+// });
 export const feedbackSchema = z.object({
   totalScore: z.number(),
-  categoryScores: z.tuple([
-    z.object({
-      name: z.literal("Communication Skills"),
+
+  // instead of a tuple (array), use an object with fixed keys
+  categoryScores: z.object({
+    CommunicationSkills: z.object({
       score: z.number(),
       comment: z.string(),
     }),
-    z.object({
-      name: z.literal("Technical Knowledge"),
+    TechnicalKnowledge: z.object({
       score: z.number(),
       comment: z.string(),
     }),
-    z.object({
-      name: z.literal("Problem Solving"),
+    ProblemSolving: z.object({
       score: z.number(),
       comment: z.string(),
     }),
-    z.object({
-      name: z.literal("Cultural Fit"),
+    CulturalFit: z.object({
       score: z.number(),
       comment: z.string(),
     }),
-    z.object({
-      name: z.literal("Confidence and Clarity"),
+    ConfidenceAndClarity: z.object({
       score: z.number(),
       comment: z.string(),
     }),
-  ]),
-  strengths: z.array(z.string()),
-  areasForImprovement: z.array(z.string()),
+  }),
+
+  // these will be newline-separated strings in prompt output
+  strengths: z.string(),
+  areasForImprovement: z.string(),
   finalAssessment: z.string(),
 });
+
 
 export const interviewCovers = [
   "/adobe.png",

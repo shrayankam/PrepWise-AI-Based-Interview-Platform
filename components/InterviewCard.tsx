@@ -6,10 +6,11 @@ import Link from 'next/link';
 import { Button } from './ui/button';
 import DisplayTechIcons from './DisplayTechIcons';
 import { id } from 'zod/v4/locales';
+import { getFeedbackByInterviewId } from '@/lib/actions/general.action';
 
 
-const InterviewCard = ({id,userId,role,type,techstack,createdAt}:InterviewCardProps) => {
-    const feedback=null as Feedback|null;
+const InterviewCard = async({id,userId,role,type,techstack,createdAt}:InterviewCardProps) => {
+    const feedback=userId && id ? await getFeedbackByInterviewId({interviewId:id, userId}):null;
 
     //technical
     const normalizedType=/mix/gi.test(type)?'Mixed':type;
