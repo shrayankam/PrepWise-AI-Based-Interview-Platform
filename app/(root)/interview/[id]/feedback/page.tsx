@@ -159,7 +159,7 @@ const Feedback = async ({ params }: RouteParams) => {
   <hr className="my-4" />
 
   {/* Final Assessment */}
-  <p className="text-lg text-gray-800 mb-4">
+  <p className="text-lg text-white mb-4">
     {feedback?.finalAssessment || "No final assessment available."}
   </p>
 
@@ -240,13 +240,13 @@ const Feedback = async ({ params }: RouteParams) => {
       </Link>
     </Button>
 
-    <Button className="btn-primary flex-1">
+    {/* <Button className="btn-primary flex-1">
       <Link href={`/interview/${id}`} className="flex w-full justify-center">
         <p className="text-sm font-semibold text-black text-center">
           Retake Interview
         </p>
       </Link>
-    </Button>
+    </Button> */}
   </div>
 </section>
   )};

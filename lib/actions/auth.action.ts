@@ -1,10 +1,8 @@
 'use server'
-
 import { auth, db } from "@/firebase/admin";
 import { cookies } from "next/headers";
 
 const ONE_WEEK = 60 * 60 * 24 * 7;
-
 export async function signUp(params: SignUpParams){
     const {uid,name,email}=params;
 
@@ -16,8 +14,6 @@ export async function signUp(params: SignUpParams){
         success: false,
         message: "User already exists. Please sign in.",
       }}
-
-    
     await db.collection("users").doc(uid).set({
       name,
       email,

@@ -28,7 +28,6 @@ const FormField = ({control,name,label,placeholder,type="text"}:FormFieldProps<T
         <FormMessage />
       </FormItem>
     )}
-
     />
 )
 
