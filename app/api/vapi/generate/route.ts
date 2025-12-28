@@ -124,50 +124,51 @@ export async function GET(){
 // import { google } from "@ai-sdk/google";
 // import { db } from "@/lib/firebase"; // apna firestore config
 // import { getRandomInterviewCover } from "@/lib/utils";
+
+
 export async function POST(request: Request) {
   try {
     const { type, role, level, techstack, amount, userid } =
       await request.json();
 
+    // ✅ ensure amount is number
+    const questionCount = Number(amount);
+
     const response = await generateText({
       model: google("gemini-2.0-flash-001"),
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a strict JSON API. Return only valid JSON. No text.",
-        },
-        {
-          role: "user",
-          content: `
-Generate ${amount} detailed interview questions.
+      prompt: `
+IMPORTANT:
+Return ONLY valid JSON.
+Do NOT add explanations.
+Do NOT add markdown.
+Do NOT add any text before or after JSON.
+
+Generate ${questionCount} detailed interview questions.
 
 Role: ${role}
 Experience Level: ${level}
 Tech Stack: ${techstack}
 Focus Type: ${type}
 
-Return ONLY a JSON array of strings.
+Output format EXACTLY like this:
+[
+  "Question 1 text",
+  "Question 2 text"
+]
 `,
-        },
-      ],
     });
 
-    let questions: string[];
+    const rawText = response.text.trim();
 
-    try {
-      questions = JSON.parse(response.text);
+    // 🔥 Extract JSON safely (even if Gemini adds text)
+    const jsonMatch = rawText.match(/\[[\s\S]*\]/);
 
-      if (!Array.isArray(questions)) {
-        throw new Error("Invalid questions format");
-      }
-    } catch (err) {
-      console.error("Gemini RAW:", response.text);
-      return Response.json(
-        { success: false, error: "AI returned invalid format" },
-        { status: 500 }
-      );
+    if (!jsonMatch) {
+      console.error("Gemini RAW:", rawText);
+      throw new Error("Invalid AI response");
     }
+
+    const questions: string[] = JSON.parse(jsonMatch[0]);
 
     const interview = {
       role,
@@ -185,7 +186,8 @@ Return ONLY a JSON array of strings.
 
     return Response.json({ success: true, interview }, { status: 200 });
   } catch (error) {
-    console.error("Server Error:", error);
+    console.error("SERVER ERROR:", error);
+
     return Response.json(
       { success: false, error: "Internal Server Error" },
       { status: 500 }
