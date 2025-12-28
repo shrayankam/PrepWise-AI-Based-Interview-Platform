@@ -124,21 +124,22 @@ export async function GET(){
 // import { google } from "@ai-sdk/google";
 // import { db } from "@/lib/firebase"; // apna firestore config
 // import { getRandomInterviewCover } from "@/lib/utils";
-
 export async function POST(request: Request) {
   try {
     const { type, role, level, techstack, amount, userid } =
       await request.json();
 
-    let questionsText: string;
-
-    // ================= GEMINI CALL =================
-    try {
-      const response = await generateText({
-        model: google("gemini-2.0-flash-001"),
-        prompt: `
-You are a JSON API.
-
+    const response = await generateText({
+      model: google("gemini-2.0-flash-001"),
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a strict JSON API. Return only valid JSON. No text.",
+        },
+        {
+          role: "user",
+          content: `
 Generate ${amount} detailed interview questions.
 
 Role: ${role}
@@ -146,62 +147,28 @@ Experience Level: ${level}
 Tech Stack: ${techstack}
 Focus Type: ${type}
 
-STRICT RULES:
-- Return ONLY valid JSON
-- Output MUST be a JSON array of strings
-- NO markdown
-- NO explanation
-- NO backticks
-- NO special characters like / * -
-- Each question should be detailed and professional
-
-Example format:
-[
-  "Explain how Next.js handles server-side rendering and why it is useful.",
-  "How would you optimize performance in a large React application?"
-]
+Return ONLY a JSON array of strings.
 `,
-      });
+        },
+      ],
+    });
 
-      questionsText = response.text;
-    } catch (aiError) {
-      console.error("Gemini API failed:", aiError);
-
-      // fallback
-      questionsText = JSON.stringify(
-        Array.from({ length: amount }, (_, i) => `Question ${i + 1}`)
-      );
-    }
-
-    // ================= CLEAN RESPONSE =================
-    const cleanedText = questionsText
-      .trim()
-      .replace(/^```json/, "")
-      .replace(/^```/, "")
-      .replace(/```$/, "")
-      .trim();
-
-    // ================= SAFE PARSE =================
     let questions: string[];
 
     try {
-      questions = JSON.parse(cleanedText);
+      questions = JSON.parse(response.text);
 
-      // validation
-      if (!Array.isArray(questions)) throw new Error("Not array");
-      if (questions.some(q => typeof q !== "string"))
-        throw new Error("Invalid question type");
-
+      if (!Array.isArray(questions)) {
+        throw new Error("Invalid questions format");
+      }
     } catch (err) {
-      console.error("JSON parse failed:", cleanedText);
-
-      questions = Array.from(
-        { length: amount },
-        (_, i) => `Question ${i + 1}`
+      console.error("Gemini RAW:", response.text);
+      return Response.json(
+        { success: false, error: "AI returned invalid format" },
+        { status: 500 }
       );
     }
 
-    // ================= BUILD INTERVIEW =================
     const interview = {
       role,
       type,
@@ -214,16 +181,11 @@ Example format:
       createdAt: new Date().toISOString(),
     };
 
-    // ================= SAVE TO FIRESTORE =================
     await db.collection("interviews").add(interview);
 
-    return Response.json(
-      { success: true, interview },
-      { status: 200 }
-    );
+    return Response.json({ success: true, interview }, { status: 200 });
   } catch (error) {
     console.error("Server Error:", error);
-
     return Response.json(
       { success: false, error: "Internal Server Error" },
       { status: 500 }
