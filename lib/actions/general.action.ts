@@ -5,6 +5,9 @@ import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 
 export async function getInterviewByUserId(userId: string): Promise<Interview[]| null> {
+  if (!userId) {
+  return []; // or throw error
+}
   const interviews=await db
   .collection("interviews")
   .where("userId","==",userId)
@@ -19,6 +22,9 @@ export async function getInterviewByUserId(userId: string): Promise<Interview[]|
 
 export async function getLatestInterviews(params: GetLatestInterviewsParams): Promise<Interview[]| null> {
   const {userId,limit=20}=params;
+   if (!userId) {
+  return []; // or throw error
+}
 
   const interviews=await db
   .collection("interviews")
